@@ -358,5 +358,34 @@ func testDatabase(t *testing.T, context spec.G, it spec.S) {
 				}))
 			})
 		})
+
+		context("when the node attributes equal signs in their values", func() {
+			var database libgenders.Database
+
+			it.Before(func() {
+				var err error
+				database, err = libgenders.NewDatabase("./testdata/genders.equal_sign_in_value")
+				Expect(err).NotTo(HaveOccurred())
+			})
+
+			it("handles them correctly", func() {
+				nodes := database.GetNodes()
+				Expect(nodes).To(Equal([]libgenders.Node{
+					{
+						Name: "node1",
+						Attributes: map[string]string{
+							"attr1": "foo=bar",
+						},
+					},
+					{
+						Name: "node2",
+						Attributes: map[string]string{
+							"attr1": "foo=baz",
+							"attr2": "",
+						},
+					},
+				}))
+			})
+		})
 	})
 }
