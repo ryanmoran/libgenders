@@ -53,8 +53,8 @@ func (p Parser) copyAttrs(attributes map[string]string, name string) map[string]
 	}
 
 	for key, val := range attrs {
-		if strings.Contains(val, "%n") {
-			attrs[key] = strings.ReplaceAll(val, "%n", name)
+		if strings.Contains(val, "%") {
+			attrs[key] = strings.NewReplacer("%n", name, "%%", "%").Replace(val)
 		}
 	}
 

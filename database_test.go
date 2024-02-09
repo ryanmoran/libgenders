@@ -387,5 +387,54 @@ func testDatabase(t *testing.T, context spec.G, it spec.S) {
 				}))
 			})
 		})
+
+		context("when the node attributes contain escape characters", func() {
+			it("handles them correctly", func() {
+				database, err := libgenders.NewDatabase("./testdata/genders.subst_escape_char")
+				Expect(err).NotTo(HaveOccurred())
+
+				nodes := database.GetNodes()
+				Expect(nodes).To(Equal([]libgenders.Node{
+					{
+						Name: "node1",
+						Attributes: map[string]string{
+							"attr1":   "",
+							"attr2":   "val2",
+							"escape1": "%t",
+							"escape2": "%t",
+							"escape3": "%n",
+						},
+					},
+					{
+						Name: "node2",
+						Attributes: map[string]string{
+							"attr1":   "",
+							"attr2":   "val2",
+							"escape1": "%t",
+							"escape2": "%t",
+							"escape3": "%n",
+						},
+					},
+				}))
+			})
+
+			it("handles all cases correctly", func() {
+				database, err := libgenders.NewDatabase("./testdata/genders.flag_test_raw_values")
+				Expect(err).NotTo(HaveOccurred())
+
+				nodes := database.GetNodes()
+				Expect(nodes).To(Equal([]libgenders.Node{
+					{
+						Name: "node1",
+						Attributes: map[string]string{
+							"escape1": "%t",
+							"escape2": "%t",
+							"escape3": "%n",
+							"escape4": "node1",
+						},
+					},
+				}))
+			})
+		})
 	})
 }
