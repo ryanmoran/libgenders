@@ -54,3 +54,12 @@ func NewDatabase(path string) (Database, error) {
 func (d Database) GetNodes() []Node {
 	return d.nodes
 }
+
+func (d Database) GetNodeAttr(name, attr string) (string, bool) {
+	if index, ok := d.names[name]; ok {
+		val, ok := d.nodes[index].Attributes[attr]
+		return val, ok
+	}
+
+	return "", false
+}

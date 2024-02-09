@@ -437,4 +437,34 @@ func testDatabase(t *testing.T, context spec.G, it spec.S) {
 			})
 		})
 	})
+
+	context("GetNodeAttr", func() {
+		var database libgenders.Database
+
+		it.Before(func() {
+			var err error
+			database, err = libgenders.NewDatabase("./testdata/genders.query_2_hostrange")
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		it("retrieves the value of an attribute for a given node", func() {
+			value, found := database.GetNodeAttr("node1", "attr2")
+			Expect(found).To(BeTrue())
+			Expect(value).To(Equal("valB"))
+		})
+
+		context("when the node does not exist", func() {
+			it("returns false", func() {
+				_, found := database.GetNodeAttr("no-such-node", "attr2")
+				Expect(found).To(BeFalse())
+			})
+		})
+
+		context("when the attr does not exist", func() {
+			it("returns false", func() {
+				_, found := database.GetNodeAttr("node1", "no-such-attr")
+				Expect(found).To(BeFalse())
+			})
+		})
+	})
 }
