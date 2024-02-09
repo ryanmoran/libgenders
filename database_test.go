@@ -252,5 +252,50 @@ func testDatabase(t *testing.T, context spec.G, it spec.S) {
 				})
 			}
 		})
+
+		context("node attributes reference the node name", func() {
+			var (
+				testdata = []string{
+					"genders.subst_nodename",
+					"genders.subst_nodename_comma",
+					"genders.subst_nodename_hostrange",
+				}
+			)
+
+			for _, filename := range testdata {
+				var database libgenders.Database
+				path := filepath.Join("./testdata", filename)
+
+				it.Before(func() {
+					var err error
+					database, err = libgenders.NewDatabase(path)
+					Expect(err).NotTo(HaveOccurred())
+				})
+
+				context(fmt.Sprintf("given %s", path), func() {
+					it("returns a list of nodes", func() {
+						nodes := database.GetNodes()
+						Expect(nodes).To(Equal([]libgenders.Node{
+							{
+								Name: "node1",
+								Attributes: map[string]string{
+									"attr1": "",
+									"attr2": "val2",
+									"attr3": "node1",
+								},
+							},
+							{
+								Name: "node2",
+								Attributes: map[string]string{
+									"attr1": "",
+									"attr2": "val2",
+									"attr3": "node2",
+								},
+							},
+						}))
+					})
+				})
+			}
+		})
 	})
 }

@@ -28,12 +28,7 @@ func (p Parser) Parse(line string) ([]Node, error) {
 
 	var nodes []Node
 	for _, name := range names {
-		var attrs map[string]string
-		if len(attributes) > 0 {
-			attrs = make(map[string]string)
-			maps.Copy(attrs, attributes)
-		}
-
+		attrs := p.copyAttrs(attributes, name)
 		nodes = append(nodes, NewNode(name, attrs))
 	}
 
@@ -48,6 +43,22 @@ func (p Parser) parseAttrs(field string) map[string]string {
 	}
 
 	return attributes
+}
+
+func (p Parser) copyAttrs(attributes map[string]string, name string) map[string]string {
+	var attrs map[string]string
+	if len(attributes) > 0 {
+		attrs = make(map[string]string)
+		maps.Copy(attrs, attributes)
+	}
+
+	for key, val := range attrs {
+		if strings.Contains(val, "%n") {
+			attrs[key] = strings.ReplaceAll(val, "%n", name)
+		}
+	}
+
+	return attrs
 }
 
 func (p Parser) parseNames(field string) []string {
