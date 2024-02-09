@@ -297,5 +297,66 @@ func testDatabase(t *testing.T, context spec.G, it spec.S) {
 				})
 			}
 		})
+
+		context("when the node attributes contain special characters", func() {
+			var database libgenders.Database
+
+			it.Before(func() {
+				var err error
+				database, err = libgenders.NewDatabase("./testdata/genders.query_special_chars")
+				Expect(err).NotTo(HaveOccurred())
+			})
+
+			it("handles them correctly", func() {
+				nodes := database.GetNodes()
+				Expect(nodes).To(Equal([]libgenders.Node{
+					{
+						Name: "node1",
+						Attributes: map[string]string{
+							"attr%percent":      "",
+							"attr|pipe":         "",
+							"attr&ampersand":    "",
+							"attr-minus":        "",
+							"attr:colon":        "",
+							"attr\\backslash":   "",
+							"attr/forwardslash": "",
+						},
+					},
+					{
+						Name: "node2",
+						Attributes: map[string]string{
+							"attr%foo%percent":      "",
+							"attr|foo|pipe":         "",
+							"attr&foo&ampersand":    "",
+							"attr-foo-minus":        "",
+							"attr:foo:colon":        "",
+							"attr\\foo\\backslash":  "",
+							"attr/foo/forwardslash": "",
+						},
+					},
+					{
+						Name: "node3",
+						Attributes: map[string]string{
+							"attr1": "attr1%percent",
+							"attr2": "attr2|pipe",
+							"attr3": "attr3&ampersand",
+							"attr4": "attr4-minus",
+							"attr5": "attr5:colon",
+							"attr6": "attr6\\backslash",
+							"attr7": "attr7/forwardslash",
+						},
+					},
+					{
+						Name: "node4",
+						Attributes: map[string]string{
+							"attr1+plus":     "",
+							"attr2+foo+plus": "",
+							"attr3":          "val3+plus",
+							"attr4":          "val4+foo+plus",
+						},
+					},
+				}))
+			})
+		})
 	})
 }
