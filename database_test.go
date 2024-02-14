@@ -467,4 +467,31 @@ func testDatabase(t *testing.T, context spec.G, it spec.S) {
 			})
 		})
 	})
+
+	context("Query", func() {
+		var database libgenders.Database
+
+		it.Before(func() {
+			var err error
+			database, err = libgenders.NewDatabase("./testdata/genders.query_1_hostrange")
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		it("returns a list of nodes matching the query", func() {
+			nodes, err := database.Query("attr7")
+			Expect(err).NotTo(HaveOccurred())
+
+			var names []string
+			for _, node := range nodes {
+				names = append(names, node.Name)
+			}
+
+			Expect(names).To(Equal([]string{
+				"node1",
+				"node3",
+				"node5",
+				"node7",
+			}))
+		})
+	})
 }

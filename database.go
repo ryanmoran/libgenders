@@ -10,6 +10,8 @@ const DefaultGendersFilepath = "/etc/genders"
 type Database struct {
 	nodes []Node
 	names map[string]int
+
+	engine QueryEngine
 }
 
 func NewDatabase(path string) (Database, error) {
@@ -40,13 +42,16 @@ func NewDatabase(path string) (Database, error) {
 			}
 
 			database.nodes = append(database.nodes, node)
-			database.names[node.Name] = len(database.nodes) - 1
+			index := len(database.nodes) - 1
+			database.names[node.Name] = index
 		}
 	}
 
 	if err := scanner.Err(); err != nil {
 		panic(err)
 	}
+
+	database.engine = NewQueryEngine(database.nodes)
 
 	return database, nil
 }
@@ -62,4 +67,15 @@ func (d Database) GetNodeAttr(name, attr string) (string, bool) {
 	}
 
 	return "", false
+}
+
+func (d Database) Query(query string) ([]Node, error) {
+	var nodes []Node
+	indices := d.engine.Query(query)
+
+	for _, index := range indices {
+		nodes = append(nodes, d.nodes[index])
+	}
+
+	return nodes, nil
 }
