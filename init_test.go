@@ -12,11 +12,6 @@ func TestLibgenders(t *testing.T) {
 	suite("Database", testDatabase)
 	suite("Node", testNode)
 	suite("Parser", testParser)
-	suite("Query", testQuery)
 	suite("QueryEngine", testQueryEngine)
-	suite.Pend("Scanner", testScanner)
-	suite.Pend("Stack", testStack)
-	suite("Set", testSet)
-	suite("Token", testToken)
 	suite.Run(t)
 }

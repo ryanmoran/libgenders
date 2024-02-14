@@ -25,7 +25,7 @@ func testQueryEngine(t *testing.T, context spec.G, it spec.S) {
 	})
 
 	context("when given simple queries", func() {
-		data := map[string]libgenders.Set{
+		data := map[string][]int{
 			"attr1":  {0, 1, 2, 3, 4, 5, 6, 7},
 			"attr2":  {0, 1, 2, 3, 4, 5, 6, 7},
 			"attr3":  {0, 1, 2, 3},
@@ -54,7 +54,7 @@ func testQueryEngine(t *testing.T, context spec.G, it spec.S) {
 	})
 
 	context("when the query produces an empty set", func() {
-		data := map[string]libgenders.Set{
+		data := map[string][]int{
 			"fakeattr":                            nil,
 			"attr1=fakeval":                       nil,
 			"attr2=fakeval":                       nil,
@@ -91,7 +91,7 @@ func testQueryEngine(t *testing.T, context spec.G, it spec.S) {
 	})
 
 	context("when the query contains binary operations", func() {
-		data := map[string]libgenders.Set{
+		data := map[string][]int{
 			"attr1&&attr2":             {0, 1, 2, 3, 4, 5, 6, 7},
 			"attr1&&attr2=val2":        {0, 1, 2, 3, 4, 5, 6, 7},
 			"attr1||attr2":             {0, 1, 2, 3, 4, 5, 6, 7},
@@ -114,7 +114,7 @@ func testQueryEngine(t *testing.T, context spec.G, it spec.S) {
 	})
 
 	context("when the query contains complement operations", func() {
-		data := map[string]libgenders.Set{
+		data := map[string][]int{
 			"~attr1":                      nil,
 			"~attr2":                      nil,
 			"~attr3":                      {4, 5, 6, 7},
@@ -143,7 +143,7 @@ func testQueryEngine(t *testing.T, context spec.G, it spec.S) {
 	})
 
 	context("when the query contains mixed operations", func() {
-		data := map[string]libgenders.Set{
+		data := map[string][]int{
 			"(attr1&&attr3)||(attr1&&attr5)":                       {0, 1, 2, 3, 4, 5, 6, 7},
 			"(attr1&&attr4=val4)||(attr1&&attr6=val6)":             {0, 1, 2, 3, 4, 5, 6, 7},
 			"(attr1&&attr7)||(attr1&&attr9)":                       {0, 1, 2, 3, 4, 5, 6, 7},
@@ -168,7 +168,7 @@ func testQueryEngine(t *testing.T, context spec.G, it spec.S) {
 	})
 
 	context("when the query contains complex operations", func() {
-		data := map[string]libgenders.Set{
+		data := map[string][]int{
 			"attr1&&attr3":             {0, 1, 2, 3},
 			"attr2&&attr3":             {0, 1, 2, 3},
 			"attr2=val2&&attr3":        {0, 1, 2, 3},
@@ -253,7 +253,7 @@ func testQueryEngine(t *testing.T, context spec.G, it spec.S) {
 	})
 
 	context("when the query results in the empty complement", func() {
-		data := map[string]libgenders.Set{
+		data := map[string][]int{
 			"~fakeattr":            {0, 1, 2, 3, 4, 5, 6, 7},
 			"~attr1=fakeval":       {0, 1, 2, 3, 4, 5, 6, 7},
 			"~attr2=fakeval":       {0, 1, 2, 3, 4, 5, 6, 7},
@@ -284,7 +284,7 @@ func testQueryEngine(t *testing.T, context spec.G, it spec.S) {
 	})
 
 	context("when the query contains double negation", func() {
-		data := map[string]libgenders.Set{
+		data := map[string][]int{
 			"~(~(attr1))":      {0, 1, 2, 3, 4, 5, 6, 7},
 			"~(~(attr2))":      {0, 1, 2, 3, 4, 5, 6, 7},
 			"~(~(attr2=val2))": {0, 1, 2, 3, 4, 5, 6, 7},

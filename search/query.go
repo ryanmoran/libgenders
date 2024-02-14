@@ -1,4 +1,4 @@
-package libgenders
+package search
 
 type Query interface {
 	Evaluate(attrs, attrvals map[string]Set, indices Set) Set

@@ -2,18 +2,20 @@ package libgenders
 
 import (
 	"fmt"
+
+	"github.com/ryanmoran/libgenders/search"
 )
 
 type QueryEngine struct {
-	attrs    map[string]Set
-	attrvals map[string]Set
-	indices  Set
+	attrs    map[string]search.Set
+	attrvals map[string]search.Set
+	indices  search.Set
 }
 
 func NewQueryEngine(nodes []Node) QueryEngine {
-	attrs := make(map[string]Set)
-	attrvals := make(map[string]Set)
-	indices := make(Set, len(nodes))
+	attrs := make(map[string]search.Set)
+	attrvals := make(map[string]search.Set)
+	indices := make(search.Set, len(nodes))
 
 	for index, node := range nodes {
 		indices[index] = index
@@ -34,11 +36,11 @@ func NewQueryEngine(nodes []Node) QueryEngine {
 	}
 }
 
-func (qe QueryEngine) Query(query string) Set {
-	tokens, err := Tokenize(query)
+func (qe QueryEngine) Query(query string) []int {
+	tokens, err := search.Tokenize(query)
 	if err != nil {
 		panic(err)
 	}
 
-	return ParseQuery(tokens).Evaluate(qe.attrs, qe.attrvals, qe.indices)
+	return search.ParseQuery(tokens).Evaluate(qe.attrs, qe.attrvals, qe.indices)
 }

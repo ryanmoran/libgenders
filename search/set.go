@@ -1,4 +1,4 @@
-package libgenders
+package search
 
 import "sort"
 

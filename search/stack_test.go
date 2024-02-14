@@ -1,4 +1,4 @@
-package libgenders_test
+package search_test
 
 import (
 	"testing"
