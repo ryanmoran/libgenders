@@ -1,4 +1,4 @@
-package search
+package internal
 
 type Stack struct {
 	tokens []Token

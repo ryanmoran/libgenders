@@ -1,4 +1,4 @@
-package search
+package internal
 
 type Query interface {
 	Evaluate(attrs, attrvals map[string]Set, indices Set) Set

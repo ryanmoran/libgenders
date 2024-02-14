@@ -1,4 +1,4 @@
-package libgenders
+package internal
 
 import (
 	"maps"
@@ -6,11 +6,12 @@ import (
 	"strings"
 )
 
-type Parser struct{}
-
-func NewParser() Parser {
-	return Parser{}
+type Node struct {
+	Name       string
+	Attributes map[string]string
 }
+
+type Parser struct{}
 
 func (p Parser) Parse(line string) ([]Node, error) {
 	line, _, _ = strings.Cut(line, "#")
@@ -29,7 +30,10 @@ func (p Parser) Parse(line string) ([]Node, error) {
 	var nodes []Node
 	for _, name := range names {
 		attrs := p.copyAttrs(attributes, name)
-		nodes = append(nodes, NewNode(name, attrs))
+		nodes = append(nodes, Node{
+			Name:       name,
+			Attributes: attrs,
+		})
 	}
 
 	return nodes, nil

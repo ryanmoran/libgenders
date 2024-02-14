@@ -1,4 +1,4 @@
-package search_test
+package internal_test
 
 import (
 	"testing"
@@ -7,8 +7,9 @@ import (
 	"github.com/sclevine/spec/report"
 )
 
-func TestSearch(t *testing.T) {
-	suite := spec.New(" libgenders/search", spec.Report(report.Terminal{}))
+func TestInternal(t *testing.T) {
+	suite := spec.New(" libgenders/internal", spec.Report(report.Terminal{}))
+	suite("Parser", testParser)
 	suite("Query", testQuery)
 	suite.Pend("Scanner", testScanner)
 	suite.Pend("Stack", testStack)

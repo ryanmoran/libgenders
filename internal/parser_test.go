@@ -1,9 +1,9 @@
-package libgenders_test
+package internal_test
 
 import (
 	"testing"
 
-	"github.com/ryanmoran/libgenders"
+	"github.com/ryanmoran/libgenders/internal"
 	"github.com/sclevine/spec"
 
 	. "github.com/onsi/gomega"
@@ -12,18 +12,14 @@ import (
 func testParser(t *testing.T, context spec.G, it spec.S) {
 	var (
 		Expect = NewWithT(t).Expect
-		parser libgenders.Parser
+		parser internal.Parser
 	)
-
-	it.Before(func() {
-		parser = libgenders.NewParser()
-	})
 
 	context("Parse", func() {
 		it("parses a line into a list of nodes", func() {
 			nodes, err := parser.Parse("node1 attr1,attr2=val2")
 			Expect(err).NotTo(HaveOccurred())
-			Expect(nodes).To(Equal([]libgenders.Node{
+			Expect(nodes).To(Equal([]internal.Node{
 				{
 					Name: "node1",
 					Attributes: map[string]string{
@@ -38,7 +34,7 @@ func testParser(t *testing.T, context spec.G, it spec.S) {
 			it("parses a line into a list of nodes", func() {
 				nodes, err := parser.Parse("node1,node2 attr1,attr2=val2")
 				Expect(err).NotTo(HaveOccurred())
-				Expect(nodes).To(Equal([]libgenders.Node{
+				Expect(nodes).To(Equal([]internal.Node{
 					{
 						Name: "node1",
 						Attributes: map[string]string{
@@ -69,7 +65,7 @@ func testParser(t *testing.T, context spec.G, it spec.S) {
 			it("returns an empty list of nodes", func() {
 				nodes, err := parser.Parse("node1,node2 attr1,attr2=val2# comment")
 				Expect(err).NotTo(HaveOccurred())
-				Expect(nodes).To(Equal([]libgenders.Node{
+				Expect(nodes).To(Equal([]internal.Node{
 					{
 						Name: "node1",
 						Attributes: map[string]string{
@@ -100,7 +96,7 @@ func testParser(t *testing.T, context spec.G, it spec.S) {
 			it("expands the range", func() {
 				nodes, err := parser.Parse("node[1-2]name attr1,attr2=val2")
 				Expect(err).NotTo(HaveOccurred())
-				Expect(nodes).To(Equal([]libgenders.Node{
+				Expect(nodes).To(Equal([]internal.Node{
 					{
 						Name: "node1name",
 						Attributes: map[string]string{
@@ -122,7 +118,7 @@ func testParser(t *testing.T, context spec.G, it spec.S) {
 				it("expands the range", func() {
 					nodes, err := parser.Parse("node[1] attr1,attr2=val2")
 					Expect(err).NotTo(HaveOccurred())
-					Expect(nodes).To(Equal([]libgenders.Node{
+					Expect(nodes).To(Equal([]internal.Node{
 						{
 							Name: "node1",
 							Attributes: map[string]string{
@@ -138,7 +134,7 @@ func testParser(t *testing.T, context spec.G, it spec.S) {
 				it("expands the range", func() {
 					nodes, err := parser.Parse("node[1,2] attr1,attr2=val2")
 					Expect(err).NotTo(HaveOccurred())
-					Expect(nodes).To(Equal([]libgenders.Node{
+					Expect(nodes).To(Equal([]internal.Node{
 						{
 							Name: "node1",
 							Attributes: map[string]string{
@@ -162,7 +158,7 @@ func testParser(t *testing.T, context spec.G, it spec.S) {
 			it("expands the range", func() {
 				nodes, err := parser.Parse("node1")
 				Expect(err).NotTo(HaveOccurred())
-				Expect(nodes).To(Equal([]libgenders.Node{
+				Expect(nodes).To(Equal([]internal.Node{
 					{Name: "node1"},
 				}))
 			})
@@ -171,7 +167,7 @@ func testParser(t *testing.T, context spec.G, it spec.S) {
 				it("expands the range", func() {
 					nodes, err := parser.Parse("node[1] attr1,attr2=val2")
 					Expect(err).NotTo(HaveOccurred())
-					Expect(nodes).To(Equal([]libgenders.Node{
+					Expect(nodes).To(Equal([]internal.Node{
 						{
 							Name: "node1",
 							Attributes: map[string]string{

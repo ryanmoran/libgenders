@@ -2,7 +2,10 @@ package libgenders
 
 import (
 	"bufio"
+	"fmt"
 	"os"
+
+	"github.com/ryanmoran/libgenders/internal"
 )
 
 const DefaultGendersFilepath = "/etc/genders"
@@ -11,7 +14,9 @@ type Database struct {
 	nodes []Node
 	names map[string]int
 
-	engine QueryEngine
+	attrs    map[string]internal.Set
+	attrvals map[string]internal.Set
+	indices  internal.Set
 }
 
 func NewDatabase(path string) (Database, error) {
@@ -22,12 +27,14 @@ func NewDatabase(path string) (Database, error) {
 	defer file.Close()
 
 	database := Database{
-		nodes: []Node{},
-		names: make(map[string]int),
+		nodes:    []Node{},
+		names:    make(map[string]int),
+		attrs:    make(map[string]internal.Set),
+		attrvals: make(map[string]internal.Set),
 	}
 
 	scanner := bufio.NewScanner(file)
-	parser := NewParser()
+	var parser internal.Parser
 	for scanner.Scan() {
 		line := scanner.Text()
 		nodes, err := parser.Parse(line)
@@ -37,21 +44,32 @@ func NewDatabase(path string) (Database, error) {
 
 		for _, node := range nodes {
 			if index, ok := database.names[node.Name]; ok {
-				database.nodes[index].MergeAttributes(node.Attributes)
+				database.nodes[index].mergeAttributes(node.Attributes)
 				continue
 			}
 
-			database.nodes = append(database.nodes, node)
+			database.nodes = append(database.nodes, Node(node))
 			index := len(database.nodes) - 1
 			database.names[node.Name] = index
+		}
+	}
+
+	database.indices = make(internal.Set, len(database.nodes))
+	for index, node := range database.nodes {
+		database.indices[index] = index
+		for key, value := range node.Attributes {
+			database.attrs[key] = append(database.attrs[key], index)
+
+			if value != "" {
+				keyval := fmt.Sprintf("%s=%s", key, value)
+				database.attrvals[keyval] = append(database.attrvals[keyval], index)
+			}
 		}
 	}
 
 	if err := scanner.Err(); err != nil {
 		panic(err)
 	}
-
-	database.engine = NewQueryEngine(database.nodes)
 
 	return database, nil
 }
@@ -70,10 +88,13 @@ func (d Database) GetNodeAttr(name, attr string) (string, bool) {
 }
 
 func (d Database) Query(query string) ([]Node, error) {
-	var nodes []Node
-	indices := d.engine.Query(query)
+	tokens, err := internal.Tokenize(query)
+	if err != nil {
+		panic(err)
+	}
 
-	for _, index := range indices {
+	var nodes []Node
+	for _, index := range internal.ParseQuery(tokens).Evaluate(d.attrs, d.attrvals, d.indices) {
 		nodes = append(nodes, d.nodes[index])
 	}
 

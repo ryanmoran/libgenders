@@ -10,8 +10,5 @@ import (
 func TestLibgenders(t *testing.T) {
 	suite := spec.New(" libgenders", spec.Report(report.Terminal{}))
 	suite("Database", testDatabase)
-	suite("Node", testNode)
-	suite("Parser", testParser)
-	suite("QueryEngine", testQueryEngine)
 	suite.Run(t)
 }

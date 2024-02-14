@@ -1,4 +1,4 @@
-package search_test
+package internal_test
 
 import (
 	"testing"
