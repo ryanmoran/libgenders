@@ -15,7 +15,7 @@ import (
 )
 
 func main() {
-    database, err := libgenders.NewDatabase(libgenders.DefaultGendersFilepath)
+	database, err := libgenders.NewDatabase(libgenders.DefaultGendersFilepath)
 	if err != nil {
 		log.Fatal(err)
 	}
