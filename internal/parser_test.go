@@ -152,6 +152,22 @@ func testParser(t *testing.T, context spec.G, it spec.S) {
 					}))
 				})
 			})
+
+			context("failure cases", func() {
+				context("when the first range value is non-numeric", func() {
+					it("returns an error", func() {
+						_, err := parser.Parse("node[banana-25] attr1,attr2=val2")
+						Expect(err).To(MatchError(ContainSubstring("failed to parse name \"node[banana-25]\": failed to parse range \"banana-25\"")))
+					})
+				})
+
+				context("when the last range value is non-numeric", func() {
+					it("returns an error", func() {
+						_, err := parser.Parse("node[1-banana] attr1,attr2=val2")
+						Expect(err).To(MatchError(ContainSubstring("failed to parse name \"node[1-banana]\": failed to parse range \"1-banana\"")))
+					})
+				})
+			})
 		})
 
 		context("when the line only specifies a node name", func() {

@@ -84,5 +84,21 @@ func testToken(t *testing.T, context spec.G, it spec.S) {
 				{Kind: internal.ValueTokenKind, Text: "attr1"},
 			}))
 		})
+
+		context("failure cases", func() {
+			context("when the left parentheses in the query are mismatched", func() {
+				it("returns an error", func() {
+					_, err := internal.Tokenize("((attr1 && ~attr3) || attr1 -- attr5)) && attr7")
+					Expect(err).To(MatchError("failed to tokenize query \"((attr1 && ~attr3) || attr1 -- attr5)) && attr7\": mismatched parentheses"))
+				})
+			})
+
+			context("when the right parentheses in the query are mismatched", func() {
+				it("returns an error", func() {
+					_, err := internal.Tokenize("((attr1 && ~attr3) || (attr1 -- attr5) && attr7")
+					Expect(err).To(MatchError("failed to tokenize query \"((attr1 && ~attr3) || (attr1 -- attr5) && attr7\": mismatched parentheses"))
+				})
+			})
+		})
 	})
 }

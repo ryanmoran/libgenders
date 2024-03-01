@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"fmt"
 	"slices"
 	"strings"
 )
@@ -40,7 +41,7 @@ func Tokenize(query string) ([]Token, error) {
 	for scanner.Len() > 0 {
 		s, err := scanner.Next()
 		if err != nil {
-			panic(err)
+			return nil, err
 		}
 
 		var token Token
@@ -115,11 +116,7 @@ func Tokenize(query string) ([]Token, error) {
 			}
 
 			if operators.IsEmpty() {
-				panic("invalid")
-			}
-
-			if operators.Top().Kind != LeftParenTokenKind {
-				panic("invalid")
+				return nil, fmt.Errorf("failed to tokenize query %q: mismatched parentheses", query)
 			}
 
 			operators.Pop()
@@ -132,7 +129,7 @@ func Tokenize(query string) ([]Token, error) {
 
 	for !operators.IsEmpty() {
 		if operators.Top().Kind == LeftParenTokenKind {
-			panic("invalid")
+			return nil, fmt.Errorf("failed to tokenize query %q: mismatched parentheses", query)
 		}
 
 		output = append(output, operators.Pop())

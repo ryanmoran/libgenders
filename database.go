@@ -39,7 +39,7 @@ func NewDatabase(path string) (Database, error) {
 		line := scanner.Text()
 		nodes, err := parser.Parse(line)
 		if err != nil {
-			panic(err)
+			return Database{}, fmt.Errorf("failed to parse database file: %w", err)
 		}
 
 		for _, node := range nodes {
@@ -68,7 +68,7 @@ func NewDatabase(path string) (Database, error) {
 	}
 
 	if err := scanner.Err(); err != nil {
-		panic(err)
+		return Database{}, fmt.Errorf("failed to scan database file: %w", err)
 	}
 
 	return database, nil
@@ -90,7 +90,7 @@ func (d Database) GetNodeAttr(name, attr string) (string, bool) {
 func (d Database) Query(query string) ([]Node, error) {
 	tokens, err := internal.Tokenize(query)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	var nodes []Node

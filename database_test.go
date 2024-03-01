@@ -13,24 +13,23 @@ import (
 )
 
 func testDatabase(t *testing.T, context spec.G, it spec.S) {
-	var (
-		Expect = NewWithT(t).Expect
-		path   string
-	)
-
-	it.Before(func() {
-		file, err := os.CreateTemp("", "genders")
-		Expect(err).NotTo(HaveOccurred())
-		defer file.Close()
-
-		path = file.Name()
-	})
-
-	it.After(func() {
-		Expect(os.Remove(path)).To(Succeed())
-	})
+	var Expect = NewWithT(t).Expect
 
 	context("NewDatabase", func() {
+		var path string
+
+		it.Before(func() {
+			file, err := os.CreateTemp("", "genders")
+			Expect(err).NotTo(HaveOccurred())
+			defer file.Close()
+
+			path = file.Name()
+		})
+
+		it.After(func() {
+			Expect(os.Remove(path)).To(Succeed())
+		})
+
 		it("loads the database from a path on disk", func() {
 			_, err := libgenders.NewDatabase(path)
 			Expect(err).NotTo(HaveOccurred())
@@ -41,6 +40,17 @@ func testDatabase(t *testing.T, context spec.G, it spec.S) {
 				it("returns an error", func() {
 					_, err := libgenders.NewDatabase("no-such-file")
 					Expect(err).To(MatchError(ContainSubstring("no-such-file: no such file or directory")))
+				})
+			})
+
+			context("when the file cannot be parsed", func() {
+				it.Before(func() {
+					Expect(os.WriteFile(path, []byte("node[%%-%%] attr=val\n"), 0600)).To(Succeed())
+				})
+
+				it("returns an error", func() {
+					_, err := libgenders.NewDatabase(path)
+					Expect(err).To(MatchError(ContainSubstring("failed to parse database file")))
 				})
 			})
 		})
@@ -814,6 +824,15 @@ func testDatabase(t *testing.T, context spec.G, it spec.S) {
 					Expect(names).To(Equal(r))
 				})
 			}
+		})
+
+		context("failure cases", func() {
+			context("when the query cannot be tokenized", func() {
+				it("returns an error", func() {
+					_, err := database.Query(") mismatched parentheses (")
+					Expect(err).To(MatchError(ContainSubstring("failed to tokenize query")))
+				})
+			})
 		})
 	})
 }

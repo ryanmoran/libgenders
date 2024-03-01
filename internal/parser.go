@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"fmt"
 	"maps"
 	"strconv"
 	"strings"
@@ -21,7 +22,11 @@ func (p Parser) Parse(line string) ([]Node, error) {
 	}
 
 	fields := strings.Fields(line)
-	names := p.parseNames(fields[0])
+	names, err := p.parseNames(fields[0])
+	if err != nil {
+		return nil, err
+	}
+
 	var attributes map[string]string
 	if len(fields) > 1 {
 		attributes = p.parseAttrs(fields[1])
@@ -65,7 +70,7 @@ func (p Parser) copyAttrs(attributes map[string]string, name string) map[string]
 	return attrs
 }
 
-func (p Parser) parseNames(field string) []string {
+func (p Parser) parseNames(field string) ([]string, error) {
 	var (
 		name    string
 		inRange bool
@@ -97,16 +102,21 @@ func (p Parser) parseNames(field string) []string {
 
 	var names []string
 	for _, f := range fields {
-		names = append(names, p.parseName(f)...)
+		fieldNames, err := p.parseName(f)
+		if err != nil {
+			return nil, err
+		}
+
+		names = append(names, fieldNames...)
 	}
 
-	return names
+	return names, nil
 }
 
-func (p Parser) parseName(field string) []string {
+func (p Parser) parseName(field string) ([]string, error) {
 	parts := strings.FieldsFunc(field, func(c rune) bool { return c == '[' || c == ']' })
 	if len(parts) < 2 {
-		return parts
+		return parts, nil
 	}
 
 	prefix := parts[0]
@@ -117,22 +127,27 @@ func (p Parser) parseName(field string) []string {
 		suffix = parts[2]
 	}
 
+	indices, err := p.parseRange(strings.Split(rng, ",")...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse name %q: %w", field, err)
+	}
+
 	var names []string
-	for _, index := range p.parseRange(strings.Split(rng, ",")...) {
+	for _, index := range indices {
 		names = append(names, prefix+index+suffix)
 	}
 
-	return names
+	return names, nil
 }
 
-func (p Parser) parseRange(ranges ...string) []string {
+func (p Parser) parseRange(ranges ...string) ([]string, error) {
 	var elems []string
 	for _, rng := range ranges {
 		start, end, _ := strings.Cut(rng, "-")
 
 		first, err := strconv.Atoi(start)
 		if err != nil {
-			panic(err)
+			return nil, fmt.Errorf("failed to parse range %q: %w", rng, err)
 		}
 
 		if len(end) == 0 {
@@ -142,7 +157,7 @@ func (p Parser) parseRange(ranges ...string) []string {
 
 		last, err := strconv.Atoi(end)
 		if err != nil {
-			panic(err)
+			return nil, fmt.Errorf("failed to parse range %q: %w", rng, err)
 		}
 
 		for i := first; i <= last; i++ {
@@ -150,5 +165,5 @@ func (p Parser) parseRange(ranges ...string) []string {
 		}
 	}
 
-	return elems
+	return elems, nil
 }
