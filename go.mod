@@ -1,6 +1,6 @@
 module github.com/ryanmoran/libgenders
 
-go 1.22.0
+go 1.23.0
 
 toolchain go1.23.5
 
@@ -11,7 +11,7 @@ require (
 
 require (
 	github.com/google/go-cmp v0.7.0 // indirect
-	golang.org/x/net v0.35.0 // indirect
-	golang.org/x/text v0.22.0 // indirect
+	golang.org/x/net v0.40.0 // indirect
+	golang.org/x/text v0.25.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
