@@ -3,7 +3,7 @@ module github.com/ryanmoran/libgenders
 go 1.25.0
 
 require (
-	github.com/onsi/gomega v1.40.0
+	github.com/onsi/gomega v1.42.0
 	github.com/sclevine/spec v1.4.0
 )
 
